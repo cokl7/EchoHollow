@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { api } from '../lib/api';
@@ -14,24 +14,24 @@ const Treehole = () => {
   const navigate = useNavigate();
   const { user, token, addTreeholePost } = useAppStore();
 
-  useEffect(() => {
-    if (!user || !token) {
-      navigate('/login');
-      return;
-    }
-
+  const loadPosts = useCallback(async () => {
+    if (!user || !token) return;
     api.setToken(token);
-    loadPosts();
-  }, [user, token, navigate]);
-
-  const loadPosts = async () => {
     try {
       const data = await api.getTreeholePosts();
       setPosts(data);
     } catch (err) {
       console.error('加载树洞失败', err);
     }
-  };
+  }, [user, token]);
+
+  useEffect(() => {
+    if (!user || !token) {
+      navigate('/login');
+      return;
+    }
+    loadPosts();
+  }, [user, token, navigate, loadPosts]);
 
   const handleSubmit = async () => {
     if (!content.trim()) return;

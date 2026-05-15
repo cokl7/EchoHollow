@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { api } from '../lib/api';
@@ -11,16 +11,20 @@ const Login = () => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const navigate = useNavigate();
   const { setUser, setToken, user, token } = useAppStore();
 
-  useEffect(() => {
+  const handleRedirect = useCallback(() => {
     if (user && token) {
       api.setToken(token);
       navigate('/');
     }
   }, [user, token, navigate]);
+
+  useEffect(() => {
+    handleRedirect();
+  }, [handleRedirect]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

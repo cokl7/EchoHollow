@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { api } from '../lib/api';
@@ -7,29 +7,26 @@ import { Heart, Sparkles, MessageCircle, Brain, Activity } from 'lucide-react';
 
 const Mediation = () => {
   const navigate = useNavigate();
-  const { user, token, suggestions, setSuggestions, setLoading } = useAppStore();
+  const { user, token, suggestions, setSuggestions } = useAppStore();
+
+  const loadSuggestions = useCallback(async () => {
+    if (!user || !token) return;
+    api.setToken(token);
+    try {
+      const data = await api.getMediationSuggestions();
+      setSuggestions(data);
+    } catch (err) {
+      console.error('加载建议失败', err);
+    }
+  }, [user, token, setSuggestions]);
 
   useEffect(() => {
     if (!user || !token) {
       navigate('/login');
       return;
     }
-
-    api.setToken(token);
     loadSuggestions();
-  }, [user, token, navigate]);
-
-  const loadSuggestions = async () => {
-    setLoading(true);
-    try {
-      const data = await api.getMediationSuggestions();
-      setSuggestions(data);
-    } catch (err) {
-      console.error('加载建议失败', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [user, token, navigate, loadSuggestions]);
 
   const getTypeIcon = (type: string) => {
     switch (type) {

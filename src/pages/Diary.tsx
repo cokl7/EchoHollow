@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { api } from '../lib/api';
@@ -7,29 +7,26 @@ import { BookOpen, Plus, Calendar } from 'lucide-react';
 
 const Diary = () => {
   const navigate = useNavigate();
-  const { user, token, diaryEntries, setDiaryEntries, setLoading } = useAppStore();
+  const { user, token, diaryEntries, setDiaryEntries } = useAppStore();
+
+  const loadDiaries = useCallback(async () => {
+    if (!user || !token) return;
+    api.setToken(token);
+    try {
+      const entries = await api.getDiaryEntries();
+      setDiaryEntries(entries);
+    } catch (err) {
+      console.error('加载日记失败', err);
+    }
+  }, [user, token, setDiaryEntries]);
 
   useEffect(() => {
     if (!user || !token) {
       navigate('/login');
       return;
     }
-
-    api.setToken(token);
     loadDiaries();
-  }, [user, token, navigate]);
-
-  const loadDiaries = async () => {
-    setLoading(true);
-    try {
-      const entries = await api.getDiaryEntries();
-      setDiaryEntries(entries);
-    } catch (err) {
-      console.error('加载日记失败', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [user, token, navigate, loadDiaries]);
 
   const getMoodIcon = (mood: string) => {
     switch (mood) {

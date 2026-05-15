@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { api } from '../lib/api';
@@ -7,20 +7,11 @@ import { Heart, Sparkles, TrendingUp, Activity, BookOpen, Zap } from 'lucide-rea
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, token, dashboardData, setDashboardData, suggestions, setSuggestions, setLoading } = useAppStore();
+  const { user, token, dashboardData, setDashboardData, suggestions, setSuggestions } = useAppStore();
 
-  useEffect(() => {
-    if (!user || !token) {
-      navigate('/login');
-      return;
-    }
-
+  const loadData = useCallback(async () => {
+    if (!user || !token) return;
     api.setToken(token);
-    loadData();
-  }, [user, token, navigate]);
-
-  const loadData = async () => {
-    setLoading(true);
     try {
       const [dashboard, suggestionsData] = await Promise.all([
         api.getDashboardData(),
@@ -30,10 +21,16 @@ const Dashboard = () => {
       setSuggestions(suggestionsData);
     } catch (err) {
       console.error('加载数据失败', err);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [user, token, setDashboardData, setSuggestions]);
+
+  useEffect(() => {
+    if (!user || !token) {
+      navigate('/login');
+      return;
+    }
+    loadData();
+  }, [user, token, navigate, loadData]);
 
   const getTypeColor = (type: string) => {
     switch (type) {
