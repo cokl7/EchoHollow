@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { api } from '../lib/api';
@@ -13,9 +13,11 @@ const Treehole = () => {
   const [viewMode, setViewMode] = useState<'list' | 'write'>('list');
   const navigate = useNavigate();
   const { user, token, addTreeholePost } = useAppStore();
+  const hasLoadedRef = useRef(false);
 
   const loadPosts = useCallback(async () => {
-    if (!user || !token) return;
+    if (!user || !token || hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
     api.setToken(token);
     try {
       const data = await api.getTreeholePosts();

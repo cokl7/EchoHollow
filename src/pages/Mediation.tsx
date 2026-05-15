@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { api } from '../lib/api';
@@ -7,10 +7,13 @@ import { Heart, Sparkles, MessageCircle, Brain, Activity } from 'lucide-react';
 
 const Mediation = () => {
   const navigate = useNavigate();
-  const { user, token, suggestions, setSuggestions } = useAppStore();
+  const { user, token, suggestions } = useAppStore();
+  const setSuggestions = useAppStore(state => state.setSuggestions);
+  const hasLoadedRef = useRef(false);
 
   const loadSuggestions = useCallback(async () => {
-    if (!user || !token) return;
+    if (!user || !token || hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
     api.setToken(token);
     try {
       const data = await api.getMediationSuggestions();

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { api } from '../lib/api';
@@ -7,10 +7,13 @@ import { BookOpen, Plus, Calendar } from 'lucide-react';
 
 const Diary = () => {
   const navigate = useNavigate();
-  const { user, token, diaryEntries, setDiaryEntries } = useAppStore();
+  const { user, token, diaryEntries } = useAppStore();
+  const setDiaryEntries = useAppStore(state => state.setDiaryEntries);
+  const hasLoadedRef = useRef(false);
 
   const loadDiaries = useCallback(async () => {
-    if (!user || !token) return;
+    if (!user || !token || hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
     api.setToken(token);
     try {
       const entries = await api.getDiaryEntries();

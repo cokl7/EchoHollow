@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { api } from '../lib/api';
@@ -7,10 +7,16 @@ import { Heart, Sparkles, TrendingUp, Activity, BookOpen, Zap } from 'lucide-rea
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, token, dashboardData, setDashboardData, suggestions, setSuggestions } = useAppStore();
+  const { user, token, dashboardData, suggestions } = useAppStore();
+  const { setDashboardData, setSuggestions } = useAppStore(state => ({
+    setDashboardData: state.setDashboardData,
+    setSuggestions: state.setSuggestions
+  }));
+  const hasLoadedRef = useRef(false);
 
   const loadData = useCallback(async () => {
-    if (!user || !token) return;
+    if (!user || !token || hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
     api.setToken(token);
     try {
       const [dashboard, suggestionsData] = await Promise.all([
