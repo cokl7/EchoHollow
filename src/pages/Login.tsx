@@ -13,7 +13,10 @@ const Login = () => {
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
-  const { setUser, setToken, user, token } = useAppStore();
+  const user = useAppStore(state => state.user);
+  const token = useAppStore(state => state.token);
+  const setUser = useAppStore(state => state.setUser);
+  const setToken = useAppStore(state => state.setToken);
 
   const handleRedirect = useCallback(() => {
     if (user && token) {

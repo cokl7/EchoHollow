@@ -7,7 +7,9 @@ import { BookOpen, Plus, Calendar } from 'lucide-react';
 
 const Diary = () => {
   const navigate = useNavigate();
-  const { user, token, diaryEntries } = useAppStore();
+  const user = useAppStore(state => state.user);
+  const token = useAppStore(state => state.token);
+  const diaryEntries = useAppStore(state => state.diaryEntries);
   const setDiaryEntries = useAppStore(state => state.setDiaryEntries);
   const hasLoadedRef = useRef(false);
 

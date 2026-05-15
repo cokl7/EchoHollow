@@ -7,11 +7,13 @@ import { Heart, Sparkles, TrendingUp, Activity, BookOpen, Zap } from 'lucide-rea
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, token, dashboardData, suggestions } = useAppStore();
-  const { setDashboardData, setSuggestions } = useAppStore(state => ({
-    setDashboardData: state.setDashboardData,
-    setSuggestions: state.setSuggestions
-  }));
+  // 分别选择每个属性
+  const user = useAppStore(state => state.user);
+  const token = useAppStore(state => state.token);
+  const dashboardData = useAppStore(state => state.dashboardData);
+  const suggestions = useAppStore(state => state.suggestions);
+  const setDashboardData = useAppStore(state => state.setDashboardData);
+  const setSuggestions = useAppStore(state => state.setSuggestions);
   const hasLoadedRef = useRef(false);
 
   const loadData = useCallback(async () => {

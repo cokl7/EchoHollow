@@ -12,7 +12,9 @@ const Treehole = () => {
   const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'list' | 'write'>('list');
   const navigate = useNavigate();
-  const { user, token, addTreeholePost } = useAppStore();
+  const user = useAppStore(state => state.user);
+  const token = useAppStore(state => state.token);
+  const addTreeholePost = useAppStore(state => state.addTreeholePost);
   const hasLoadedRef = useRef(false);
 
   const loadPosts = useCallback(async () => {

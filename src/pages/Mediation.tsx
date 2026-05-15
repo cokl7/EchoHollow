@@ -7,7 +7,9 @@ import { Heart, Sparkles, MessageCircle, Brain, Activity } from 'lucide-react';
 
 const Mediation = () => {
   const navigate = useNavigate();
-  const { user, token, suggestions } = useAppStore();
+  const user = useAppStore(state => state.user);
+  const token = useAppStore(state => state.token);
+  const suggestions = useAppStore(state => state.suggestions);
   const setSuggestions = useAppStore(state => state.setSuggestions);
   const hasLoadedRef = useRef(false);
 

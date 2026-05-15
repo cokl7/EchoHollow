@@ -7,7 +7,9 @@ import { User, LogOut, Users, Mail, Copy, CheckCircle } from 'lucide-react';
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { user, token, logout, setLoading } = useAppStore();
+  const user = useAppStore(state => state.user);
+  const token = useAppStore(state => state.token);
+  const logout = useAppStore(state => state.logout);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteLoading, setInviteLoading] = useState(false);
   const [copied, setCopied] = useState(false);
